@@ -57,4 +57,12 @@ public class Doctor {
                 ", specializations=" + specializations +
                 '}';
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
 }

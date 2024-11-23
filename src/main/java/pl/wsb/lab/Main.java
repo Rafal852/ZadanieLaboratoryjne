@@ -1,6 +1,7 @@
 package pl.wsb.lab;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,24 @@ import java.util.Scanner;
 public class Main {
     private static Clinic registry = new Clinic();
     private static MedicalPersonel medicalStaff = new MedicalPersonel();
+    private static DoctorsSchedule schedule = new DoctorsSchedule();
     private static Scanner scanner = new Scanner(System.in);
     private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public static void main(String[] args) {
+
+        LocalDate testDate = LocalDate.now();
+        Patient patient1 = new Patient("Jan","Kowalski","321332109338", "Nowa 1", "123456789", "pacjent1@gmail.com", testDate);
+        Doctor doctor1 = new Doctor("123", "Kamil", "Nowak", "321332109339", "Stara 1", "123123123", "doktor1", testDate, new ArrayList<>());
+
+        registry.addPatient(patient1);
+        medicalStaff.addDoctor(doctor1);
+
         while (true) {
             System.out.println("1. Zarządzaj pacjentami");
             System.out.println("2. Zarządzaj personelem medycznym");
-            System.out.println("3. Wyjście");
+            System.out.println("3. Zarządzaj wizytami");
+            System.out.println("4. Wyjście");
 
             int mainChoice = scanner.nextInt();
             scanner.nextLine();
@@ -29,6 +40,9 @@ public class Main {
                     manageDoctors();
                     break;
                 case 3:
+                    manageSchedule();
+                    break;
+                case 4:
                     System.out.println("Zamykanie programu.");
                     return;
                 default:
@@ -98,6 +112,24 @@ public class Main {
             }
         }
     }
+    private static void manageSchedule() {
+        System.out.println("\nZarządzanie harmonogramem lekarzy:");
+        System.out.println("1. Dodaj wizyte");
+        System.out.println("3. Powrót do menu głównego");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                addVisit();
+                break;
+            case 3:
+                return;
+            default:
+                System.out.println("Nieprawidłowa opcja.");
+        }
+    }
 
     private static void addPatient() {
         System.out.print("Imię: ");
@@ -131,6 +163,28 @@ public class Main {
 
         Patient patient = new Patient(firstName, lastName, pesel, address, phoneNumber, email, birthDate);
         registry.addPatient(patient);
+    }
+
+    private static void addVisit() {
+        System.out.print("Podaj PESEL pacjenta: ");
+        String pesel = scanner.nextLine();
+        Patient patient = registry.findPatientByPesel(pesel);
+        System.out.println("Pacjent: " + patient.getFirstName() + " " + patient.getLastName());
+
+        System.out.print("Podaj Id lekarza: ");
+        String id = scanner.nextLine();
+        Doctor doctor = medicalStaff.findDoctorById(id);
+        System.out.println("Lekarz: " + doctor.getFirstName() + " " + doctor.getLastName());
+
+        System.out.print("Podaj date: ");
+        LocalDate date = LocalDate.parse(scanner.nextLine(), dateFormatter);
+
+        System.out.print("Podaj godzine poczatku wizyty: ");
+        LocalTime startTime = LocalTime.parse(scanner.nextLine());
+
+        LocalTime endTime = startTime.plusMinutes(15);
+
+        schedule.AddVisit(date, doctor, patient, startTime, endTime);
     }
 
     private static void searchByPesel() {

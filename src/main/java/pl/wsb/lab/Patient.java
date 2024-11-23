@@ -49,4 +49,8 @@ public class Patient {
                 ", age=" + age +
                 '}';
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
 }
