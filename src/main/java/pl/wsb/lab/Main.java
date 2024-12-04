@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/*
 public class Main {
     private static Clinic registry = new Clinic();
     private static MedicalPersonel medicalStaff = new MedicalPersonel();
-    private static DoctorsSchedule schedule = new DoctorsSchedule();
+    //private static DoctorsAppointments schedule = new DoctorsAppointments();
     private static Scanner scanner = new Scanner(System.in);
     private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -184,7 +185,7 @@ public class Main {
 
         LocalTime endTime = startTime.plusMinutes(15);
 
-        schedule.AddVisit(date, doctor, patient, startTime, endTime);
+        //schedule.AddVisit(date, doctor, patient, startTime, endTime);
     }
 
     private static void searchByPesel() {
@@ -272,3 +273,60 @@ public class Main {
         }
     }
 }
+*/
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class Main {
+    public static void main(String[] args) {
+        DoctorsSchedule schedule = new DoctorsSchedule();
+
+        Doctor doctor = new Doctor("123", "Jan", "Kowalski", "321332109339", "Stara 1", "123123123", "doktor1", LocalDate.of(1980, 5, 20), new ArrayList<>());
+        schedule.addSchedule(doctor, LocalDate.now(), LocalTime.of(8, 0), LocalTime.of(16, 0));
+
+        DoctorsAppointments appointments = new DoctorsAppointments(schedule);
+        Patient patient = new Patient("Anna", "Nowak", "12345678901", "Testowa 1", "123456789", "anna.nowak@example.com", LocalDate.of(1990, 1, 1));
+        try {
+            // Próba rezerwacji wizyty na godzinę xx:10
+            appointments.bookAppointment(LocalDate.now(), doctor, patient, LocalTime.of(9, 10));
+            System.out.println("Test: Błąd! Wizyta została umówiona na godzinę inną niż xx:15.");
+        } catch (Exception e) {
+            System.out.println("Test: Sukces! " + e.getMessage());
+        }
+
+
+        // Dodanie harmonogramu
+       /* LocalDate date = LocalDate.of(2024, 11, 24);
+        LocalTime startTime = LocalTime.of(8, 0);
+        LocalTime endTime = LocalTime.of(16, 0);
+        schedule.addSchedule(doctor, date, startTime, endTime);
+
+        // Pobranie godzin pracy
+        DoctorsSchedule.WorkingHours workingHours = schedule.getWorkingHours(doctor, date);
+
+        // Sprawdzenie
+        if (workingHours != null && workingHours.getStartTime().equals(startTime) && workingHours.getEndTime().equals(endTime)) {
+            System.out.println("Test 1: Harmonogram został poprawnie dodany!");
+        } else {
+            System.out.println("Test 1: Błąd podczas dodawania harmonogramu!");
+        }
+        /*try {
+            // Próba dodania nieprawidłowego harmonogramu
+            schedule.addSchedule(doctor, LocalDate.of(2024, 11, 24), LocalTime.of(16, 0), LocalTime.of(8, 0));
+            System.out.println("Test 2: Błąd! Harmonogram z nieprawidłowymi godzinami został dodany.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Test 2: Sukces! Wykryto nieprawidłowe godziny pracy: " + e.getMessage());
+        }
+*/
+       /* schedule.addSchedule(doctor, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(15, 0)); // Dziś
+        schedule.addSchedule(doctor, LocalDate.now().plusDays(3), LocalTime.of(10, 0), LocalTime.of(14, 0)); // Za 3 dni
+        schedule.addSchedule(doctor, LocalDate.now().plusDays(10), LocalTime.of(8, 0), LocalTime.of(12, 0)); // Poza tygodniem
+
+        // Pobranie tygodniowego grafiku
+        System.out.println("Test 3: Grafik na najbliższy tydzień:");
+        schedule.loadWeeklySchedule(doctor).forEach(System.out::println);*/
+
+
+    }
+}
+
