@@ -13,6 +13,9 @@ public class Patient {
     private int age;
 
     public Patient(String firstName, String lastName, String pesel, String address, String phoneNumber, String email, LocalDate birthDate) {
+        if (birthDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Data urodzenia nie może być w przyszłości. Spróbuj ponownie.");
+        }
         this.firstName = firstName;
         this.lastName = lastName;
         this.pesel = pesel;

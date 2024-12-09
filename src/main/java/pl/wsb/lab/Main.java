@@ -115,8 +115,12 @@ public class Main {
                 String birthDateString = scanner.nextLine();
                 try {
                     birthDate = LocalDate.parse(birthDateString, dateFormatter);
+                    if (birthDate.isAfter(LocalDate.now())) {
+                        System.out.println("Data urodzenia nie może być w przyszłości. Spróbuj ponownie.");
+                        continue;
+                    }
                     break;
-                } catch (Exception e) {
+                } catch (DateTimeParseException e) {
                     System.out.println("Nieprawidłowy format daty. Wprowadź datę w formacie dd-MM-yyyy.");
                 }
             }
