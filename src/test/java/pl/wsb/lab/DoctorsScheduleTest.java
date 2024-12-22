@@ -87,16 +87,16 @@ public class DoctorsScheduleTest {
     public void testAddVisitWhenDoctorIsNotAvailable() {
         LocalDate date = LocalDate.of(2024, 12, 19);
         LocalTime startTime = LocalTime.of(9, 0);
-        LocalTime endTime = LocalTime.of(9, 15);
+        LocalTime endTime = LocalTime.of(15, 0);
 
         // Dodanie grafiku pracy lekarza
         doctorsSchedule.addDoctorSchedule(doctor.getId(), date, startTime, endTime);
 
-        // Próba dodania wizyty w czasie, gdy lekarz jest zajęty
-        doctorsSchedule.AddVisit(date, doctor, patient, LocalTime.of(9, 10)); // Konflikt w czasie
+        // Próba dodania wizyty w czasie, gdy lekarz nie pracuje
+        doctorsSchedule.AddVisit(date, doctor, patient, LocalTime.of(15, 15)); // Konflikt w czasie
 
         List<DoctorsSchedule.Visit> visits = doctorsSchedule.getScheduleForDoctor(doctor.getId(), date);
-        assertEquals(0, visits.size(), "Wizyta nie powinna zostać dodana, ponieważ lekarz jest zajęty.");
+        assertEquals(0, visits.size(), "Wizyta nie powinna zostać dodana, ponieważ wizyta przekracza czas pracy lekarza.");
     }
 
     @Test
@@ -114,5 +114,43 @@ public class DoctorsScheduleTest {
         assertEquals(startTime, doctorSchedule.get(0).getStartTime(), "Godzina rozpoczęcia grafiku nie jest zgodna.");
         assertEquals(endTime, doctorSchedule.get(0).getEndTime(), "Godzina zakończenia grafiku nie jest zgodna.");
     }
+    @Test
+    public void testAddVisitWhenDoctorIsBusy()
+    {
+        LocalDate date = LocalDate.of(2024, 12, 19);
+        LocalTime startTime = LocalTime.of(9, 0);
+        LocalTime endTime = LocalTime.of(17, 0);
 
+        doctorsSchedule.addDoctorSchedule(doctor.getId(), date, startTime, endTime);
+
+        doctorsSchedule.AddVisit(date, doctor, patient, LocalTime.of(15, 15));
+        doctorsSchedule.AddVisit(date, doctor, patient, LocalTime.of(15, 15));
+
+        List<DoctorsSchedule.Visit> visits = doctorsSchedule.getScheduleForDoctor(doctor.getId(), date);
+
+        assertEquals(1, visits.size(), "Nie można dodać drugiego pacjenta na tą samą godzinę.");
+        assertEquals(patient, visits.get(0).getPatient(), "Drugi pacjent nie może być dodany o tej samej godzinie.");
+    }
+    @Test
+    public void testAddVisitWithNonQuarterHourTime() {
+        LocalDate date = LocalDate.of(2024, 12, 19);
+
+        LocalTime startTime1 = LocalTime.of(9, 7);
+        LocalTime startTime2 = LocalTime.of(9, 22);
+        LocalTime startTime3 = LocalTime.of(9, 38);
+        LocalTime startTime4 = LocalTime.of(9, 52);
+
+        doctorsSchedule.AddVisit(date, doctor, patient, startTime1);
+        doctorsSchedule.AddVisit(date, doctor, patient, startTime2);
+        doctorsSchedule.AddVisit(date, doctor, patient, startTime3);
+        doctorsSchedule.AddVisit(date, doctor, patient, startTime4);
+
+        List<DoctorsSchedule.Visit> visits = doctorsSchedule.getScheduleForDoctor(doctor.getId(), date);
+
+        assertEquals(4, visits.size(), "Pomyślnie dodano 4 wizyty.");
+        assertEquals(LocalTime.of(9, 0), visits.get(0).getStartTime(), "Pierwsza wizyta przesunięta na 9:00.");
+        assertEquals(LocalTime.of(9, 15), visits.get(1).getStartTime(), "Druga wizyta przesunięta na 9:15.");
+        assertEquals(LocalTime.of(9, 30), visits.get(2).getStartTime(), "Trzecia wizyta przesunięta na 9:30.");
+        assertEquals(LocalTime.of(10, 0), visits.get(3).getStartTime(), "Czwarta wizyta przesunięta na 10:00.");
+    }
 }
